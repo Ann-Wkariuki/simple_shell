@@ -1,49 +1,27 @@
-#include "shellby.h"
+#include "shell.h"
 
 /**
- * look_inPATH - looks in paths for a function to be valid.
- * @token: token to be looked in the PATH directories.
- *
- * Return: if token is found in PATH return a newly allocated
- *         string with PATH_found/token. NULL if not found.
- */
-
-char *look_inPATH(char **token)
+* find_path - finds the path from the global enviroment
+* Return: NULL if path is not found or path if path is found.
+*/
+char *find_path(void)
 {
-	int file_stat, i;
-	struct stat file_info;
-	char *full_path = NULL, *temp = NULL;
-	char **paths = NULL;
+	int x;
+	char **env = environ, *path = NULL;
 
-	if (_strchr(*token, '/') != 0)
-		return (NULL);
-	paths = store_paths();
-	if (paths == NULL)
-		return (NULL);
-	i = 0;
-	while (paths[i] != NULL)
+	while (*env)
 	{
-		full_path = concat(paths[i], "/");
-
-		temp = full_path;
-		full_path = concat(full_path, *token);
-
-		free(temp);
-		file_stat = stat(full_path, &file_info);
-		if (file_stat == 0)
-			break;
-
-		free(full_path);
-		i++;
+		if (_strncmp(*env, "PATH=", 5) == 0)
+		{
+			path = *env;
+			while (*path && x < 5)
+			{
+				path++;
+				x++;
+			}
+			return (path);
+		}
+		env++;
 	}
-	if (paths[i] == NULL)
-	{
-		free(paths[0] - 5);
-		free(paths);
-		return (NULL);
-	}
-	*token = full_path;
-	free(paths[0] - 5);
-	free(paths);
-	return (full_path);
+	return (NULL);
 }
